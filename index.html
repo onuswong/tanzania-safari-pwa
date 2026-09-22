@@ -4,30 +4,21 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <meta name="apple-mobile-web-app-title" content="Safari 26">
-    <meta name="theme-color" content="#f5f5f4">
-    <link rel="apple-touch-icon" href="https://ui-avatars.com/api/?name=Safari&background=d97706&color=fff&size=512">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="apple-mobile-web-app-title" content="Safari 2026">
+    <link rel="apple-touch-icon" href="https://ui-avatars.com/api/?name=Safari&background=D97706&color=fff&size=512">
     <title>Tanzania Safari 2026 PWA</title>
     
-    <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Lucide Icons -->
     <script src="https://unpkg.com/lucide@latest"></script>
-    
     <script>
         tailwind.config = {
             theme: {
                 extend: {
                     colors: {
                         safari: { 
-                            bg: '#f5f5f4',      
-                            card: '#ffffff',    
-                            gold: '#d97706',    
-                            green: '#059669',   
-                            border: '#e7e5e4',  
-                            textMain: '#292524',
-                            textSub: '#78716c'  
+                            bg: '#f5f5f4', card: '#ffffff', gold: '#d97706', green: '#059669', 
+                            border: '#e7e5e4', textMain: '#292524', textSub: '#78716c'  
                         }
                     },
                     fontFamily: { sans: ['-apple-system', 'BlinkMacSystemFont', 'PingFang TC', 'Helvetica Neue', 'sans-serif'] }
@@ -37,441 +28,393 @@
     </script>
     <style>
         body {
-            background-color: #f5f5f4;
-            color: #292524;
-            -webkit-user-select: none; user-select: none;
-            -webkit-touch-callout: none;
+            background-color: #f5f5f4; color: #292524;
+            -webkit-user-select: none; user-select: none; -webkit-touch-callout: none;
             overscroll-behavior-y: none;
-            padding-top: env(safe-area-inset-top);
-            padding-bottom: env(safe-area-inset-bottom);
+            padding-bottom: env(safe-area-inset-bottom); padding-top: env(safe-area-inset-top);
         }
         .hide-scrollbar::-webkit-scrollbar { display: none; }
         .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
-        
         .tab-content { display: none; }
         .tab-content.active { display: block; animation: fadeIn 0.3s ease; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        .bento-card { background-color: #ffffff; border: 1px solid #e7e5e4; border-radius: 1rem; box-shadow: 0 2px 10px rgba(0,0,0,0.05); }
         
-        .glass-panel { background: rgba(255, 255, 255, 0.9); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); border-bottom: 1px solid #e7e5e4; }
-        .bento-card { background-color: #ffffff; border: 1px solid #e7e5e4; border-radius: 1rem; box-shadow: 0 2px 10px rgba(0,0,0,0.02); }
+        /* 懸浮選單動畫 */
+        #fab-menu { transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
+        #fab-menu.open { opacity: 1; pointer-events: auto; transform: translateY(0) scale(1); }
+        #fab-menu.closed { opacity: 0; pointer-events: none; transform: translateY(20px) scale(0.95); }
+        .fab-btn { transition: transform 0.3s; }
+        .fab-btn.open { transform: rotate(45deg); }
         
-        /* Accordion Transitions */
-        .accordion-content {
-            max-height: 0;
-            overflow: hidden;
-            transition: max-height 0.4s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.3s ease;
-            opacity: 0;
-        }
-        .accordion-active .accordion-content {
-            max-height: 500px;
-            opacity: 1;
-        }
-        .accordion-icon { transition: transform 0.3s ease; }
-        .accordion-active .accordion-icon { transform: rotate(180deg); }
-
-        /* FAB Speed Dial Animations */
-        #fab-menu-items {
-            transform: translateY(20px) scale(0.9);
-            opacity: 0;
-            pointer-events: none;
-            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            transform-origin: bottom center;
-        }
-        .fab-open #fab-menu-items {
-            transform: translateY(0) scale(1);
-            opacity: 1;
-            pointer-events: auto;
-        }
-        #fab-main-icon { transition: transform 0.3s ease; }
-        .fab-open #fab-main-icon { transform: rotate(135deg); }
+        /* 手風琴動畫 */
+        .accordion-content { max-height: 0; overflow: hidden; transition: max-height 0.3s ease-out, padding 0.3s ease; }
+        .accordion-content.expanded { max-height: 500px; padding-top: 0.75rem; padding-bottom: 0.75rem; }
     </style>
 </head>
 <body class="h-[100dvh] flex flex-col overflow-hidden relative">
 
-    <header class="glass-panel px-4 py-3 shrink-0 z-20 relative">
-        <div class="flex justify-between items-center mb-1">
-            <h1 class="text-safari-gold font-bold text-lg flex items-center gap-2">
-                <i data-lucide="paw-print" class="w-5 h-5"></i> <span data-i18n="title">Safari 2026</span>
+    <!-- 頂部看板 -->
+    <header class="bg-white/90 backdrop-blur-md border-b border-stone-200 px-4 py-3 shrink-0 z-20 relative shadow-sm">
+        <div class="flex justify-between items-center mb-2">
+            <h1 class="text-safari-gold font-bold text-xl flex items-center gap-2">
+                <i data-lucide="compass" class="w-6 h-6"></i> <span data-i18n="title">Safari 2026</span>
             </h1>
             <div class="flex items-center gap-2">
-                <button id="lang-toggle" class="bg-stone-200 text-stone-600 px-3 py-1 rounded-full text-xs font-bold active:bg-stone-300 transition-colors">EN</button>
-                <span id="trip-day-badge" class="text-xs bg-safari-gold text-white px-3 py-1 rounded-full font-bold shadow-sm">Day -- / 11</span>
+                <button id="lang-toggle" class="bg-stone-200 text-stone-600 px-3 py-1 rounded-md text-sm font-bold active:bg-stone-300 transition-colors">EN</button>
+                <span id="trip-day-badge" class="text-xs bg-safari-gold text-white px-3 py-1.5 rounded-full font-bold shadow-sm">Day -- / 11</span>
             </div>
         </div>
-        <div class="grid grid-cols-2 gap-2 text-sm mt-3">
-            <div class="bento-card p-2 flex flex-col items-center justify-center bg-stone-50/80">
-                <span class="text-safari-textSub text-[10px] uppercase font-bold tracking-wider" data-i18n="hkt">香港時間 HKT</span>
-                <span id="hkt-time" class="font-mono font-bold text-safari-textMain text-base tracking-wider mt-0.5">--:--:--</span>
+        <div class="grid grid-cols-2 gap-3 text-sm">
+            <div class="bento-card p-2 flex flex-col items-center justify-center bg-stone-50 border-stone-200">
+                <span class="text-stone-500 text-[10px] uppercase font-bold" data-i18n="hkt">HKT (香港)</span>
+                <span id="hkt-time" class="font-mono font-bold text-stone-800 tracking-wider">--:--:--</span>
             </div>
-            <div class="bento-card p-2 flex flex-col items-center justify-center border-safari-gold/30 bg-amber-50/80">
-                <span class="text-safari-gold text-[10px] uppercase font-bold tracking-wider" data-i18n="eat">坦桑尼亞 EAT</span>
-                <span id="eat-time" class="font-mono font-bold text-safari-gold text-base tracking-wider mt-0.5">--:--:--</span>
+            <div class="bento-card p-2 flex flex-col items-center justify-center border-safari-gold/30 bg-amber-50">
+                <span class="text-safari-gold text-[10px] uppercase font-bold" data-i18n="eat">EAT (-5h)</span>
+                <span id="eat-time" class="font-mono font-bold text-safari-gold tracking-wider">--:--:--</span>
             </div>
         </div>
     </header>
 
-    <main class="flex-1 overflow-y-auto hide-scrollbar p-4 relative z-0 pb-32" id="main-scroll">
+    <!-- 主要內容區 -->
+    <main class="flex-1 overflow-y-auto hide-scrollbar p-4 relative z-0 pb-28" id="main-scroll">
         
-        <!-- Tab 1: Itinerary Accordion -->
+        <!-- 行程模組 (Accordion) -->
         <section id="tab-itinerary" class="tab-content active space-y-4">
-            <h2 class="text-xl font-black mb-4 flex items-center gap-2 text-safari-textMain">
-                <i data-lucide="calendar" class="w-6 h-6 text-safari-gold"></i> <span data-i18n="tabItinerary">行程總覽</span>
+            <h2 class="text-2xl font-bold mb-4 flex items-center gap-2 text-stone-800">
+                <i data-lucide="map" class="w-6 h-6 text-safari-gold"></i> <span data-i18n="tabItinerary">行程總覽</span>
             </h2>
-            <div id="itinerary-list" class="space-y-3">
-                <!-- Injected via JS -->
-            </div>
+            <div id="itinerary-list" class="space-y-3"></div>
         </section>
 
-        <!-- Tab 2: Wildlife -->
+        <!-- 動物圖鑑模組 -->
         <section id="tab-wildlife" class="tab-content space-y-4">
-            <div class="flex justify-between items-end mb-4">
-                <h2 class="text-xl font-black flex items-center gap-2 text-safari-textMain">
+            <div class="flex justify-between items-end mb-2">
+                <h2 class="text-2xl font-bold flex items-center gap-2 text-stone-800">
                     <i data-lucide="camera" class="w-6 h-6 text-safari-gold"></i> <span data-i18n="tabWildlife">動物圖鑑</span>
                 </h2>
-                <div class="text-sm text-safari-textSub bg-stone-200 px-3 py-1 rounded-full font-bold">
-                    <span id="wildlife-progress" class="text-safari-gold">0%</span>
-                </div>
+                <div class="text-sm text-stone-500 font-medium"><span data-i18n="progress">進度:</span> <span id="wildlife-progress" class="text-safari-gold font-bold">0%</span></div>
             </div>
-            <div class="w-full bg-stone-200 h-2.5 rounded-full mb-6 overflow-hidden shadow-inner">
-                <div id="wildlife-bar" class="bg-safari-gold h-full w-0 transition-all duration-500 rounded-full"></div>
+            <div class="w-full bg-stone-200 h-2.5 rounded-full mb-4 overflow-hidden shadow-inner">
+                <div id="wildlife-bar" class="bg-safari-gold h-full w-0 transition-all duration-700 ease-out"></div>
             </div>
-            <div id="wildlife-grid" class="grid grid-cols-2 gap-4">
-                <!-- Injected via JS -->
-            </div>
+            <div id="wildlife-grid" class="grid grid-cols-2 gap-3"></div>
         </section>
 
-        <!-- Tab 3: Malaria Tracker -->
+        <!-- 用藥追蹤模組 (Timeline) -->
         <section id="tab-malaria" class="tab-content space-y-4">
-            <h2 class="text-xl font-black mb-4 flex items-center gap-2 text-safari-textMain">
-                <i data-lucide="pill" class="w-6 h-6 text-safari-green"></i> <span data-i18n="tabMalaria">瘧疾用藥追蹤</span>
+            <h2 class="text-2xl font-bold mb-2 flex items-center gap-2 text-stone-800">
+                <i data-lucide="pill" class="w-6 h-6 text-safari-green"></i> <span data-i18n="tabMalaria">用藥追蹤</span>
             </h2>
             
-            <div class="bento-card p-5 border-safari-green/30 bg-emerald-50">
-                <h3 class="text-safari-green font-bold mb-2 text-lg flex items-center gap-2" data-i18n="pillTitle">今日服藥狀態</h3>
-                <p class="text-sm text-stone-600 mb-4 font-medium" data-i18n="pillDesc">建議於每日 20:00 (晚餐後) 隨含脂餐食服用。</p>
-                
-                <button id="btn-take-pill" class="w-full py-4 rounded-xl font-bold text-lg transition-all flex items-center justify-center gap-2 shadow-sm">
-                    <!-- Button state injected by JS -->
+            <div class="bento-card p-5 border-safari-green/30 bg-emerald-50 mb-6">
+                <h3 class="text-safari-green font-bold mb-1 text-lg" data-i18n="pillTitle">今日服藥狀態</h3>
+                <p class="text-xs text-stone-600 mb-4" data-i18n="pillDesc">請於每日 20:00 (晚餐後) 隨含脂餐食服用，確保吸收。</p>
+                <button id="btn-take-pill" class="w-full py-4 rounded-xl font-bold text-lg transition-all transform active:scale-[0.98] flex items-center justify-center gap-2 bg-stone-300 text-stone-500 cursor-not-allowed">
+                    <i data-lucide="lock" class="w-6 h-6"></i> <span data-i18n="pillLock">行程尚未開始</span>
                 </button>
-                
-                <div id="time-lock-msg" class="hidden mt-3 text-center text-xs font-bold text-red-500 bg-red-100 py-2 rounded-lg" data-i18n="pillLocked">
-                    行程尚未開始。預防藥將於 9月23日解鎖。
-                </div>
-                
-                <div class="mt-5 text-center bg-white p-3 rounded-lg shadow-sm border border-emerald-100">
-                    <span class="text-[10px] uppercase font-bold text-stone-500 tracking-wider" data-i18n="pillNext">距離當地 20:00 倒數</span>
-                    <div id="pill-countdown" class="text-2xl font-mono font-black text-safari-green mt-1">--:--:--</div>
+                <div class="mt-4 text-center">
+                    <span class="text-xs text-stone-500 font-medium" data-i18n="pillNext">距離當日 20:00 倒數：</span>
+                    <div id="pill-countdown" class="text-xl font-mono font-bold text-safari-gold mt-1">--:--:--</div>
                 </div>
             </div>
 
-            <div class="bento-card p-5 bg-white">
-                <h3 class="font-bold text-sm uppercase tracking-wider text-stone-400 mb-4" data-i18n="timelineTitle">服藥時間軸 (19天療程)</h3>
-                <div class="relative border-l-2 border-stone-200 ml-2 space-y-4 pb-2" id="malaria-timeline">
-                    <!-- Timeline items injected by JS -->
+            <!-- 時間軸 -->
+            <div class="pl-2">
+                <h4 class="font-bold mb-4 text-stone-700 flex items-center gap-2">
+                    <i data-lucide="clock" class="w-4 h-4"></i> <span data-i18n="timelineTitle">19 天療程紀錄</span>
+                </h4>
+                <div id="malaria-timeline" class="border-l-2 border-stone-200 ml-3 pl-4 space-y-6 relative">
+                    <!-- 動態生成時間軸 -->
                 </div>
             </div>
         </section>
 
-        <!-- Tab 4: Info -->
+        <!-- 資訊模組 -->
         <section id="tab-info" class="tab-content space-y-4">
-            <h2 class="text-xl font-black mb-4 flex items-center gap-2 text-safari-textMain">
+            <h2 class="text-2xl font-bold mb-4 flex items-center gap-2 text-stone-800">
                 <i data-lucide="info" class="w-6 h-6 text-blue-500"></i> <span data-i18n="tabInfo">實用資訊</span>
             </h2>
             
             <div class="bento-card p-4">
-                <button onclick="exportICS()" class="w-full bg-blue-50 text-blue-600 border border-blue-200 py-3 rounded-xl font-bold flex items-center justify-center gap-2 active:bg-blue-100 transition-colors shadow-sm">
-                    <i data-lucide="calendar-plus" class="w-5 h-5"></i> <span data-i18n="exportTitle">匯出行程至 Apple Calendar</span>
+                <button onclick="exportICS()" class="w-full bg-blue-50 text-blue-600 border border-blue-200 py-3.5 rounded-xl font-bold flex items-center justify-center gap-2 active:bg-blue-100 transition-colors">
+                    <i data-lucide="calendar-plus" class="w-5 h-5"></i> <span data-i18n="exportTitle">匯出至 Apple Calendar</span>
                 </button>
             </div>
 
-            <h3 class="text-stone-400 text-xs font-bold uppercase tracking-wider mt-6 mb-2 pl-2" data-i18n="emergencyTitle">緊急聯絡</h3>
-            <div class="bento-card p-4 space-y-3 bg-white">
-                <a href="tel:+255768316830" class="flex items-center justify-between p-3 bg-stone-50 border border-stone-100 rounded-xl active:bg-stone-100 transition-colors">
+            <h3 class="text-stone-400 text-xs font-bold uppercase mt-8 mb-2 tracking-wider" data-i18n="emergencyTitle">緊急聯絡</h3>
+            <div class="bento-card p-2 space-y-1 bg-white">
+                <a href="tel:+255768316830" class="flex items-center justify-between p-3 bg-stone-50 rounded-lg active:bg-stone-100 transition-colors">
                     <div>
-                        <div class="font-bold text-safari-textMain text-sm" data-i18n="agentTitle">Williamson Adventures</div>
+                        <div class="font-bold text-stone-800" data-i18n="agentTitle">Williamson Adventures</div>
                         <div class="text-xs text-stone-500 mt-0.5" data-i18n="agentDesc">當地接待旅行社</div>
                     </div>
                     <div class="bg-safari-gold/10 text-safari-gold p-2 rounded-full"><i data-lucide="phone" class="w-4 h-4"></i></div>
                 </a>
-                <div class="flex items-center justify-between p-3 bg-red-50 border border-red-100 rounded-xl">
+                <div class="flex items-center justify-between p-3 bg-stone-50 rounded-lg">
                     <div>
-                        <div class="font-bold text-red-600 text-sm" data-i18n="doctorTitle">Amref Flying Doctor</div>
-                        <div class="text-xs text-red-400 mt-0.5" data-i18n="doctorDesc">救護飛行醫生服務 (App內建提示)</div>
+                        <div class="font-bold text-red-600" data-i18n="doctorTitle">Amref Flying Doctor</div>
+                        <div class="text-xs text-stone-500 mt-0.5" data-i18n="doctorDesc">救護飛行醫生服務</div>
                     </div>
-                    <div class="bg-red-100 text-red-600 p-2 rounded-full"><i data-lucide="helicopter" class="w-4 h-4"></i></div>
+                    <div class="bg-red-50 text-red-500 p-2 rounded-full"><i data-lucide="helicopter" class="w-4 h-4"></i></div>
                 </div>
             </div>
             
-            <h3 class="text-stone-400 text-xs font-bold uppercase tracking-wider mt-6 mb-2 pl-2" data-i18n="guideTitle">防蚊指南</h3>
-            <div class="bento-card p-4 bg-white">
-                <ul class="text-sm text-stone-600 space-y-3 list-disc pl-4 marker:text-safari-gold">
-                    <li data-i18n="g1">衣著：避免穿著深藍色或黑色衣物，極易吸引采采蠅 (Tsetse fly)。</li>
-                    <li data-i18n="g2">驅蚊：使用含 DEET 或 Picaridin 成分的防蚊噴霧。</li>
-                    <li data-i18n="g3">後續：回港後需按指示持續服用滿 7 天，切勿自行停藥。</li>
+            <div class="bento-card p-4 bg-white mt-4">
+                <h4 class="font-bold mb-3 flex items-center gap-2 text-stone-800">
+                    <i data-lucide="shield-alert" class="w-4 h-4 text-safari-gold"></i> <span data-i18n="guideTitle">防蚊護理指南</span>
+                </h4>
+                <ul class="text-sm text-stone-600 space-y-2 list-disc pl-4">
+                    <li data-i18n="g1">避免穿著深藍色或黑色衣物，易吸引采采蠅。</li>
+                    <li data-i18n="g2">使用含 DEET 或 Picaridin 成分的防蚊噴霧。</li>
+                    <li data-i18n="g3">回港後需按指示持續服藥滿 7 天，切勿自行停藥。</li>
                 </ul>
             </div>
         </section>
     </main>
 
-    <div id="fab-container" class="fixed right-4 bottom-[calc(1.5rem+env(safe-area-inset-bottom))] z-40 flex flex-col items-end gap-3">
-        <!-- Sub Menus -->
-        <div id="fab-menu-items" class="flex flex-col gap-3 items-end">
-            <button class="fab-nav-btn flex items-center gap-3 active:scale-95 transition-transform" data-target="tab-info">
-                <span class="bg-white px-3 py-1.5 rounded-lg shadow-md text-sm font-bold text-stone-600" data-i18n="navInfo">資訊</span>
-                <div class="w-12 h-12 bg-white rounded-full shadow-md flex justify-center items-center text-blue-500 border border-stone-100"><i data-lucide="info" class="w-5 h-5"></i></div>
+    <!-- 懸浮選單導航 (FAB) -->
+    <div class="absolute bottom-6 right-6 z-40 flex flex-col items-end gap-3">
+        <!-- 選單項目 -->
+        <div id="fab-menu" class="closed flex flex-col gap-3 items-end mb-2">
+            <button class="nav-btn flex items-center gap-3 bg-white px-4 py-2 rounded-full shadow-lg border border-stone-100 active:bg-stone-50" data-target="tab-info">
+                <span class="text-sm font-bold text-stone-600" data-i18n="navInfo">資訊</span>
+                <div class="bg-blue-100 p-2 rounded-full text-blue-600"><i data-lucide="info" class="w-4 h-4"></i></div>
             </button>
-            <button class="fab-nav-btn flex items-center gap-3 active:scale-95 transition-transform" data-target="tab-malaria">
-                <span class="bg-white px-3 py-1.5 rounded-lg shadow-md text-sm font-bold text-stone-600" data-i18n="navPill">用藥</span>
-                <div class="w-12 h-12 bg-white rounded-full shadow-md flex justify-center items-center text-safari-green border border-stone-100"><i data-lucide="pill" class="w-5 h-5"></i></div>
+            <button class="nav-btn flex items-center gap-3 bg-white px-4 py-2 rounded-full shadow-lg border border-stone-100 active:bg-stone-50" data-target="tab-malaria">
+                <span class="text-sm font-bold text-stone-600" data-i18n="navPill">用藥</span>
+                <div class="bg-emerald-100 p-2 rounded-full text-safari-green"><i data-lucide="pill" class="w-4 h-4"></i></div>
             </button>
-            <button class="fab-nav-btn flex items-center gap-3 active:scale-95 transition-transform" data-target="tab-wildlife">
-                <span class="bg-white px-3 py-1.5 rounded-lg shadow-md text-sm font-bold text-stone-600" data-i18n="navWild">動物</span>
-                <div class="w-12 h-12 bg-white rounded-full shadow-md flex justify-center items-center text-stone-500 border border-stone-100"><i data-lucide="camera" class="w-5 h-5"></i></div>
+            <button class="nav-btn flex items-center gap-3 bg-white px-4 py-2 rounded-full shadow-lg border border-stone-100 active:bg-stone-50" data-target="tab-wildlife">
+                <span class="text-sm font-bold text-stone-600" data-i18n="navWild">圖鑑</span>
+                <div class="bg-stone-200 p-2 rounded-full text-stone-600"><i data-lucide="camera" class="w-4 h-4"></i></div>
             </button>
-            <button class="fab-nav-btn flex items-center gap-3 active:scale-95 transition-transform" data-target="tab-itinerary">
-                <span class="bg-white px-3 py-1.5 rounded-lg shadow-md text-sm font-bold text-stone-600" data-i18n="navItin">行程</span>
-                <div class="w-12 h-12 bg-white rounded-full shadow-md flex justify-center items-center text-safari-gold border border-stone-100"><i data-lucide="calendar" class="w-5 h-5"></i></div>
+            <button class="nav-btn flex items-center gap-3 bg-white px-4 py-2 rounded-full shadow-lg border border-stone-100 active:bg-stone-50" data-target="tab-itinerary">
+                <span class="text-sm font-bold text-stone-600" data-i18n="navItin">行程</span>
+                <div class="bg-amber-100 p-2 rounded-full text-safari-gold"><i data-lucide="map" class="w-4 h-4"></i></div>
             </button>
         </div>
         
-        <!-- Main FAB Toggle -->
-        <button id="fab-toggle" class="w-14 h-14 bg-safari-textMain text-white rounded-full shadow-lg flex justify-center items-center active:scale-90 transition-transform relative z-50">
-            <i data-lucide="compass" class="w-7 h-7" id="fab-main-icon"></i>
+        <!-- 主按鈕 -->
+        <button id="fab-main" class="fab-btn bg-safari-gold text-white p-4 rounded-full shadow-xl shadow-amber-600/30 active:scale-95 flex items-center justify-center">
+            <i data-lucide="menu" class="w-7 h-7"></i>
         </button>
     </div>
+    
+    <!-- 半透明背景遮罩 -->
+    <div id="fab-overlay" class="fixed inset-0 bg-stone-900/20 backdrop-blur-sm z-30 opacity-0 pointer-events-none transition-opacity duration-300"></div>
 
-    <div id="animal-modal" class="fixed inset-0 bg-stone-900/95 z-50 hidden flex-col items-center justify-center p-5 backdrop-blur-md opacity-0 transition-opacity">
-        <button id="close-modal" class="absolute top-[env(safe-area-inset-top)] right-4 p-3 text-white/50 hover:text-white mt-4 bg-stone-800 rounded-full active:scale-90"><i data-lucide="x" class="w-6 h-6"></i></button>
+    <!-- 動物詳細資料彈窗 (Modal) -->
+    <div id="animal-modal" class="fixed inset-0 bg-stone-900/95 z-50 hidden flex-col items-center justify-center p-6 backdrop-blur-md opacity-0 transition-opacity duration-300">
+        <button id="close-modal" class="absolute top-8 right-6 p-2 text-white/70 hover:text-white bg-white/10 rounded-full active:scale-95 transition-transform"><i data-lucide="x" class="w-6 h-6"></i></button>
         <img id="modal-img" src="" referrerpolicy="no-referrer" class="w-full max-w-sm rounded-2xl mb-6 object-cover h-64 border border-stone-700 shadow-2xl" alt="Animal">
-        <div class="text-center w-full max-w-sm">
-            <h2 id="modal-title" class="text-3xl font-black text-safari-gold mb-1">Name</h2>
-            <p id="modal-swahili" class="text-stone-400 italic mb-6 font-serif text-lg">Swahili</p>
-            <div class="bento-card p-5 text-left space-y-3 bg-white/10 border-white/10 text-white rounded-2xl shadow-inner">
+        <div class="text-left w-full max-w-sm">
+            <h2 id="modal-title" class="text-3xl font-bold text-safari-gold mb-1 drop-shadow-md">Name</h2>
+            <p id="modal-swahili" class="text-stone-400 italic mb-5 font-serif text-lg">Swahili</p>
+            <div class="bento-card p-5 space-y-3 bg-white/10 border-white/10 text-white rounded-xl shadow-inner">
                 <p class="text-sm flex items-start gap-2">
-                    <i data-lucide="tag" class="w-4 h-4 text-stone-400 mt-0.5 shrink-0"></i>
-                    <span><span class="text-stone-400 text-xs uppercase tracking-wider block mb-1" data-i18n="modalTag">標籤</span> <span id="modal-tags" class="text-emerald-400 font-bold text-base"></span></span>
+                    <i data-lucide="tag" class="w-4 h-4 text-emerald-400 mt-0.5 shrink-0"></i>
+                    <span><span class="text-stone-400 font-medium" data-i18n="modalTag">標籤：</span> <span id="modal-tags" class="text-emerald-400 font-bold"></span></span>
                 </p>
-                <div class="w-full h-px bg-white/10"></div>
                 <p class="text-sm flex items-start gap-2">
-                    <i data-lucide="map-pin" class="w-4 h-4 text-stone-400 mt-0.5 shrink-0"></i>
-                    <span><span class="text-stone-400 text-xs uppercase tracking-wider block mb-1" data-i18n="modalLoc">發現地點</span> <span id="modal-loc" class="text-white font-medium text-base"></span></span>
+                    <i data-lucide="map-pin" class="w-4 h-4 text-amber-400 mt-0.5 shrink-0"></i>
+                    <span><span class="text-stone-400 font-medium" data-i18n="modalLoc">地點：</span> <span id="modal-loc" class="font-medium text-white shadow-sm"></span></span>
                 </p>
             </div>
         </div>
     </div>
 
     <script>
-        // --- Translations ---
+        // === 多語系設定 ===
         const i18n = {
             zh: {
-                title: "Safari 2026", hkt: "香港時間 HKT", eat: "坦桑尼亞 EAT",
-                tabItinerary: "行程總覽", tabWildlife: "動物圖鑑", tabMalaria: "瘧疾用藥追蹤", tabInfo: "實用資訊",
-                navItin: "行程", navWild: "動物", navPill: "用藥", navInfo: "資訊", toggleBtn: "EN",
-                dayStr: "Day", modalTag: "標籤", modalLoc: "常見出沒地點", timelineTitle: "服藥時間軸 (19天療程)",
-                pillTitle: "今日服藥狀態", pillDesc: "建議於每日 20:00 (晚餐後) 隨含脂餐食服用。",
-                pillMark: "標記今日已服用", pillTaken: "今日已服藥 ✅", pillNext: "距離當地 20:00 倒數",
-                pillLocked: "⚠️ 行程尚未開始。按鈕將於 9月23日 (香港出發日) 解鎖。",
-                guideTitle: "防蚊護理指南", g1: "衣著禁忌：避免穿著深藍色或黑色衣物，極易吸引采采蠅 (Tsetse fly)。",
-                g2: "驅蚊劑：使用含 DEET 或 Picaridin 成分的防蚊噴霧。", g3: "後續用藥：回港後需按指示持續服用滿 7 天，切勿自行停藥。",
-                exportTitle: "匯出行程至 Apple Calendar", emergencyTitle: "緊急聯絡",
+                title: "Safari 2026", hkt: "HKT (香港)", eat: "EAT (-5h)",
+                tabItinerary: "行程總覽", tabWildlife: "動物圖鑑", tabMalaria: "用藥追蹤", tabInfo: "實用資訊",
+                progress: "進度:", pillTitle: "今日服藥狀態", pillDesc: "請於每日 20:00 (晚餐後) 隨含脂餐食服用，確保吸收。",
+                pillMark: "標記今日已服用", pillTaken: "今日已服藥", pillNext: "距離當日 20:00 倒數：", pillLock: "行程尚未開始",
+                timelineTitle: "19 天療程紀錄",
+                guideTitle: "防蚊護理指南", g1: "避免穿著深藍色或黑色衣物，易吸引采采蠅。",
+                g2: "使用含 DEET 或 Picaridin 成分的防蚊噴霧。", g3: "回港後需按指示持續服藥滿 7 天，切勿自行停藥。",
+                exportTitle: "匯出至 Apple Calendar", emergencyTitle: "緊急聯絡",
                 agentTitle: "Williamson Adventures", agentDesc: "當地接待旅行社",
-                doctorTitle: "Amref Flying Doctor", doctorDesc: "救護飛行醫生服務 (App內建提示)"
+                doctorTitle: "Amref Flying Doctor", doctorDesc: "救護飛行醫生服務",
+                navItin: "行程", navWild: "圖鑑", navPill: "用藥", navInfo: "資訊", toggleBtn: "EN",
+                dayStr: "Day", modalTag: "標籤：", modalLoc: "地點："
             },
             en: {
-                title: "Safari 2026", hkt: "HK Time (HKT)", eat: "Local Time (EAT)",
-                tabItinerary: "Itinerary", tabWildlife: "Wildlife", tabMalaria: "Malaria Tracker", tabInfo: "Information",
-                navItin: "Trip", navWild: "Animals", navPill: "Meds", navInfo: "Info", toggleBtn: "中文",
-                dayStr: "Day", modalTag: "Tags", modalLoc: "Common Locations", timelineTitle: "19-Day Medication Timeline",
-                pillTitle: "Today's Medication", pillDesc: "Take daily at 20:00 with a fatty meal to prevent nausea.",
-                pillMark: "Mark as Taken", pillTaken: "Taken Today ✅", pillNext: "Time until local 20:00",
-                pillLocked: "⚠️ Trip not started. Button unlocks on Sep 23 (Departure day).",
-                guideTitle: "Mosquito Protection", g1: "Clothing: Avoid black/dark blue to prevent attracting Tsetse flies.",
-                g2: "Repellent: Use sprays containing DEET or Picaridin.", g3: "Post-trip: Continue medication for 7 days after returning.",
-                exportTitle: "Export Trip to Apple Calendar", emergencyTitle: "Emergency Contacts",
+                title: "Safari 2026", hkt: "HKT", eat: "EAT (-5h)",
+                tabItinerary: "Itinerary", tabWildlife: "Checklist", tabMalaria: "Meds", tabInfo: "Info",
+                progress: "Progress:", pillTitle: "Today's Medication", pillDesc: "Take daily at 20:00 (after dinner) with a fatty meal.",
+                pillMark: "Mark as Taken", pillTaken: "Taken Today", pillNext: "Countdown to 20:00:", pillLock: "Trip Not Started",
+                timelineTitle: "19-Day Course Record",
+                guideTitle: "Mosquito Protection", g1: "Avoid black/dark blue clothing (attracts Tsetse flies).",
+                g2: "Use DEET or Picaridin repellent.", g3: "Continue meds for 7 days after returning to HK.",
+                exportTitle: "Export to Apple Calendar", emergencyTitle: "Emergency Contacts",
                 agentTitle: "Williamson Adventures", agentDesc: "Local Tour Operator",
-                doctorTitle: "Amref Flying Doctor", doctorDesc: "Air Ambulance Service"
+                doctorTitle: "Amref Flying Doctor", doctorDesc: "Air Ambulance",
+                navItin: "Trip", navWild: "Animals", navPill: "Meds", navInfo: "Info", toggleBtn: "中文",
+                dayStr: "Day", modalTag: "Tags: ", modalLoc: "Location: "
             }
         };
 
-        // --- Data Definitions ---
-        const MED_START = new Date('2026-09-23T20:00:00+08:00').getTime(); // Time Lock Timestamp
-        const START_DATE = new Date('2026/09/24 00:00:00+08:00'); // Trip Day 1
-        
+        let currentLang = 'zh';
+        try { currentLang = localStorage.getItem('safari_lang') || 'zh'; } catch(e) {}
+
+        // === 行程資料 ===
+        const START_DATE = new Date('2026/09/24 00:00:00+08:00');
         const itinerary = [
             { day: 1, date: '2026/09/24', 
-              zh: { dest: '乞力馬扎羅 (JRO) → 阿魯沙', lodge: 'Arusha Planet Lodge', meals: '早餐', activity: '機場接送、市區漫步適應環境、行前說明會。' },
+              zh: { dest: '乞力馬扎羅 (JRO) → 阿魯沙', lodge: 'Arusha Planet Lodge', meals: '早餐', activity: '機場接送、市區漫步、調節時差、行前簡報。' },
               en: { dest: 'Kilimanjaro (JRO) → Arusha', lodge: 'Arusha Planet Lodge', meals: 'Breakfast', activity: 'Airport transfer, city walk, jet lag adjustment, briefing.' } },
             { day: 2, date: '2026/09/25',
-              zh: { dest: '塔朗吉雷國家公園', lodge: 'Marera Valley Lodge', meals: '早、午、晚餐', activity: '觀賞標誌性猢猻樹與高密度大象家族群。' },
-              en: { dest: 'Tarangire National Park', lodge: 'Marera Valley Lodge', meals: 'All Included', activity: 'Iconic Baobab trees and massive elephant herds.' } },
+              zh: { dest: '塔朗吉雷國家公園', lodge: 'Marera Valley Lodge', meals: '早、午、晚餐', activity: '觀賞標誌性猢猻樹與全坦桑最壯觀大象家族群。' },
+              en: { dest: 'Tarangire National Park', lodge: 'Marera Valley Lodge', meals: 'All Included', activity: 'Game drive to see Baobab trees and huge elephant herds.' } },
             { day: 3, date: '2026/09/26',
-              zh: { dest: '恩戈羅高地 → 塞倫蓋蒂中部', lodge: 'Central Serengeti Moyo Camp Hembe', meals: '早、午、晚餐', activity: '穿越火山口森林，進入 Seronera 核心區尋找獅群。' },
-              en: { dest: 'Ngorongoro → Central Serengeti', lodge: 'Moyo Camp Hembe', meals: 'All Included', activity: 'Transit via highlands, enter Seronera to track lions.' } },
+              zh: { dest: '恩戈羅高地 → 塞倫蓋蒂中部', lodge: 'Central Serengeti Moyo Camp Hembe', meals: '早、午、晚餐', activity: '前往 Seronera 地區，進入大貓核心地帶。' },
+              en: { dest: 'Highlands → Central Serengeti', lodge: 'Moyo Camp Hembe', meals: 'All Included', activity: 'Drive to Seronera area, entering big cat territory.' } },
             { day: 4, date: '2026/09/27',
-              zh: { dest: '塞倫蓋蒂中部 → 北部', lodge: 'Safari Haven Migration Camp', meals: '早、午、晚餐', activity: '一路向北推進，深入馬拉河大遷徙前線。' },
-              en: { dest: 'Central → Northern Serengeti', lodge: 'Safari Haven Migration Camp', meals: 'All Included', activity: 'Heading north to the Mara River migration frontline.' } },
+              zh: { dest: '塞倫蓋蒂中部 → 北部', lodge: 'Safari Haven Migration Camp', meals: '早、午、晚餐', activity: '一路向北，追蹤角馬群抵達馬拉河核心區域。' },
+              en: { dest: 'Central → Northern Serengeti', lodge: 'Safari Haven Migration Camp', meals: 'All Included', activity: 'Heading north to Mara River tracking the Great Migration.' } },
             { day: 5, date: '2026/09/28', highlight: true,
-              zh: { dest: '馬拉河核心天國之渡', lodge: 'Safari Haven Migration Camp', meals: '早、午、晚餐', activity: '清晨 06:30 熱氣球 Safari，香檳早餐後全日蹲點渡口。' },
-              en: { dest: 'Mara River Crossings', lodge: 'Safari Haven Migration Camp', meals: 'All Included', activity: '06:30 Sunrise Balloon Safari. Champagne breakfast, river crossings.' } },
+              zh: { dest: '塞倫蓋蒂北部 (馬拉河)', lodge: 'Safari Haven Migration Camp', meals: '早、午、晚餐', activity: '06:30 熱氣球 Safari，香檳早餐，追逐天國之渡。' },
+              en: { dest: 'Northern Serengeti (Mara River)', lodge: 'Safari Haven Migration Camp', meals: 'All Included', activity: '06:30 Balloon Safari, Champagne breakfast, River Crossings.' } },
             { day: 6, date: '2026/09/29',
-              zh: { dest: '塞倫蓋蒂北部 → 中部', lodge: 'Central Serengeti Moyo Camp Hembe', meals: '早、午、晚餐', activity: '返回中部，沿途搜尋樹冠花豹與岩石丘生態。' },
-              en: { dest: 'Northern → Central Serengeti', lodge: 'Moyo Camp Hembe', meals: 'All Included', activity: 'Return game drive, explore Kopjes and track leopards.' } },
+              zh: { dest: '塞倫蓋蒂北部 → 中部', lodge: 'Central Serengeti Moyo Camp Hembe', meals: '早、午、晚餐', activity: '返回中部，探索河谷水坑與尋找樹上的花豹。' },
+              en: { dest: 'Northern → Central Serengeti', lodge: 'Moyo Camp Hembe', meals: 'All Included', activity: 'Return game drive, Kopjes exploration, leopard tracking.' } },
             { day: 7, date: '2026/09/30',
-              zh: { dest: '恩戈羅恩戈羅火山口', lodge: 'Marera Valley Lodge', meals: '早、午、晚餐', activity: '清晨下切 600 公尺至火山口底，尋找極危黑犀牛。' },
-              en: { dest: 'Ngorongoro Crater', lodge: 'Marera Valley Lodge', meals: 'All Included', activity: 'Descend 600m to crater floor. Search for the Black Rhino.' } },
+              zh: { dest: '恩戈羅恩戈羅火山口', lodge: 'Marera Valley Lodge', meals: '早、午、晚餐', activity: '下切 600 公尺至火山口底！尋找極危黑犀牛。' },
+              en: { dest: 'Ngorongoro Crater', lodge: 'Marera Valley Lodge', meals: 'All Included', activity: 'Descend 600m to crater floor! Search for the Black Rhino.' } },
             { day: 8, date: '2026/10/01',
-              zh: { dest: '阿魯沙 ✈ 桑給巴爾島', lodge: 'Nungwi Beach Resort by Turaco', meals: '早、午、晚餐', activity: '搭乘內陸航班飛抵印度洋，入住北部白沙灘欣賞日落。' },
-              en: { dest: 'Arusha ✈ Zanzibar', lodge: 'Nungwi Beach Resort', meals: 'All Included', activity: 'Domestic flight, transfer to north coast white sand beach.' } },
+              zh: { dest: '阿魯沙 ✈ 桑給巴爾島', lodge: 'Nungwi Beach Resort by Turaco', meals: '早、午、晚餐', activity: '搭乘內陸航班抵達桑島，前往北部白沙灘欣賞日落。' },
+              en: { dest: 'Arusha ✈ Zanzibar', lodge: 'Nungwi Beach Resort', meals: 'All Included', activity: 'Domestic flight to Zanzibar, transfer to beach resort.' } },
             { day: 9, date: '2026/10/02',
-              zh: { dest: '桑給巴爾島', lodge: 'Nungwi Beach Resort by Turaco', meals: '早、午、晚餐', activity: '白沙灘漫步、造訪海龜保育中心、自費探索石頭城。' },
-              en: { dest: 'Zanzibar Relax', lodge: 'Nungwi Beach Resort', meals: 'All Included', activity: 'Beach relaxing, turtle sanctuary, optional Stone Town tour.' } },
+              zh: { dest: '桑給巴爾島 (悠閒時光)', lodge: 'Nungwi Beach Resort by Turaco', meals: '早、午、晚餐', activity: '沙灘放鬆、海龜保育基地、可自選石頭城探索。' },
+              en: { dest: 'Zanzibar Island', lodge: 'Nungwi Beach Resort', meals: 'All Included', activity: 'Beach relaxation, turtle sanctuary, optional Stone Town.' } },
             { day: 10, date: '2026/10/03',
-              zh: { dest: '桑給巴爾海洋探索日', lodge: 'Nungwi Beach Resort by Turaco', meals: '早、午、晚餐', activity: '印度洋蔚藍海水體驗，傳統單桅帆船 (Dhow)，海鮮晚宴。' },
-              en: { dest: 'Zanzibar Ocean Day', lodge: 'Nungwi Beach Resort', meals: 'All Included', activity: 'Turquoise ocean safari, traditional Dhow sailboats, seafood.' } },
+              zh: { dest: '桑給巴爾島 (海洋日)', lodge: 'Nungwi Beach Resort by Turaco', meals: '早、午、晚餐', activity: '藍色海洋體驗、木造帆船出海、海鮮晚宴。' },
+              en: { dest: 'Zanzibar Ocean Day', lodge: 'Nungwi Beach Resort', meals: 'All Included', activity: 'Ocean safari, traditional Dhow sailing, seafood dinner.' } },
             { day: 11, date: '2026/10/04',
-              zh: { dest: '桑島 ✈ JRO 轉機返港', lodge: '溫暖的家', meals: '早餐、午餐', activity: '專車送機，飛返乞力馬扎羅機場，搭乘國際航班圓滿返港。' },
-              en: { dest: 'Zanzibar ✈ JRO Departure', lodge: 'Home Sweet Home', meals: 'Breakfast, Lunch', activity: 'Airport transfer, flight to JRO, connect to international flight.' } }
+              zh: { dest: '桑島 ✈ 阿魯沙 → 乞力馬扎羅', lodge: '溫暖的家', meals: '早餐、午餐', activity: '搭機返抵 JRO，踏上回港歸途。' },
+              en: { dest: 'Zanzibar ✈ Arusha → JRO', lodge: 'Home', meals: 'Breakfast, Lunch', activity: 'Fly back to JRO, board international flight to HK.' } }
         ];
 
+        // === 動物圖鑑資料 (已統一最佳化 Unsplash CDN 參數，適合離線快取) ===
         const animals = [
-            { id: 'lion', zh: '獅子', en: 'Lion', sw: 'Simba', zhTags: 'Big Five, 掠食者', enTags: 'Big Five, Predator', loc: 'Serengeti Kopjes, Crater', img: 'https://images.unsplash.com/photo-1546182990-dffeafbe841d?w=600&auto=format&fit=crop' },
-            { id: 'leopard', zh: '花豹', en: 'Leopard', sw: 'Chui', zhTags: 'Big Five, 掠食者', enTags: 'Big Five, Predator', loc: 'Seronera Acacia Trees', img: 'https://images.unsplash.com/photo-1456926631375-92c8ce872def?w=600&auto=format&fit=crop' },
-            { id: 'rhino', zh: '黑犀牛', en: 'Black Rhino', sw: 'Kifaru', zhTags: 'Big Five, 極危', enTags: 'Big Five, Endangered', loc: 'Ngorongoro Crater Floor', img: 'https://images.unsplash.com/photo-1575550959106-5a7defe28b56?w=600&auto=format&fit=crop' },
-            { id: 'elephant', zh: '非洲象', en: 'Elephant', sw: 'Tembo', zhTags: 'Big Five', enTags: 'Big Five', loc: 'Tarangire River Valley', img: 'https://images.unsplash.com/photo-1557050543-4d5f4e07ef46?w=600&auto=format&fit=crop' },
-            { id: 'buffalo', zh: '非洲水牛', en: 'Cape Buffalo', sw: 'Nyati', zhTags: 'Big Five', enTags: 'Big Five', loc: 'Crater wetlands, Serengeti', img: 'https://images.unsplash.com/photo-1534177616072-ef7dc120449d?w=600&auto=format&fit=crop' },
-            { id: 'cheetah', zh: '獵豹', en: 'Cheetah', sw: 'Duma', zhTags: '陸地極速, 掠食者', enTags: 'Fastest Land Animal', loc: 'Serengeti short grass plains', img: 'https://images.unsplash.com/photo-1541781774459-bb2af2f05b55?w=600&auto=format&fit=crop' },
-            { id: 'wildebeest', zh: '角馬', en: 'Wildebeest', sw: 'Nyumbu', zhTags: '大遷徙主力', enTags: 'Great Migration', loc: 'Mara River, Serengeti', img: 'https://images.unsplash.com/photo-1516426122078-c23e76319801?w=600&auto=format&fit=crop' },
-            { id: 'zebra', zh: '草原斑馬', en: 'Zebra', sw: 'Punda Milia', zhTags: '遷徙先遣軍', enTags: 'Migration Vanguard', loc: 'All Parks', img: 'https://images.unsplash.com/photo-1509198397868-475647b2a1e5?w=600&auto=format&fit=crop' },
-            { id: 'giraffe', zh: '馬賽長頸鹿', en: 'Masai Giraffe', sw: 'Twiga', zhTags: '坦桑尼亞國獸', enTags: 'National Animal', loc: 'Tarangire Acacia Woodlands', img: 'https://images.unsplash.com/photo-1547721064-da6cfb341d50?w=600&auto=format&fit=crop' },
-            { id: 'hippo', zh: '河馬', en: 'Hippopotamus', sw: 'Kiboko', zhTags: '水域巨獸', enTags: 'Aquatic Giant', loc: 'Retima Hippo Pool, Crater', img: 'https://images.unsplash.com/photo-1520697830682-bbb6e85e2b0b?w=600&auto=format&fit=crop' }
+            { id: 'lion', zh: '獅子', en: 'Lion', sw: 'Simba', zhTags: 'Big Five, 掠食者', enTags: 'Big Five, Predator', loc: 'Serengeti, Crater', img: 'https://images.unsplash.com/photo-1546182990-dffeafbe841d?auto=format&fit=crop&w=800&q=80' },
+            { id: 'leopard', zh: '花豹', en: 'Leopard', sw: 'Chui', zhTags: 'Big Five, 掠食者', enTags: 'Big Five, Predator', loc: 'Seronera', img: 'https://images.unsplash.com/photo-1544985361-b420d7a77043?auto=format&fit=crop&w=800&q=80' },
+            { id: 'rhino', zh: '黑犀牛', en: 'Black Rhino', sw: 'Faru', zhTags: 'Big Five, 極危', enTags: 'Big Five, Endangered', loc: 'Ngorongoro Crater', img: 'https://images.unsplash.com/photo-1672586658825-e653341241fc?auto=format&fit=crop&w=800&q=80' },
+            { id: 'elephant', zh: '非洲象', en: 'Elephant', sw: 'Tembo', zhTags: 'Big Five', enTags: 'Big Five', loc: 'Tarangire, Crater', img: 'https://images.unsplash.com/photo-1557050543-4d5f4e07ef46?auto=format&fit=crop&w=800&q=80' },
+            { id: 'buffalo', zh: '非洲水牛', en: 'Cape Buffalo', sw: 'Nyati', zhTags: 'Big Five', enTags: 'Big Five', loc: 'All Parks', img: 'https://images.unsplash.com/photo-1703878298745-cabc1b7fe312?auto=format&fit=crop&w=800&q=80' },
+            { id: 'cheetah', zh: '獵豹', en: 'Cheetah', sw: 'Duma', zhTags: '掠食者', enTags: 'Predator', loc: 'Serengeti Plains', img: 'https://plus.unsplash.com/premium_photo-1661826792893-5b300391d34f?auto=format&fit=crop&w=800&q=80' },
+            { id: 'wildebeest', zh: '斑紋角馬', en: 'Wildebeest', sw: 'Nyumbu', zhTags: '大遷徙主角', enTags: 'Great Migration', loc: 'Mara River', img: 'https://images.unsplash.com/photo-1517118828960-de5ea37d8ae6?auto=format&fit=crop&w=800&q=80' },
+            { id: 'zebra', zh: '草原斑馬', en: 'Zebra', sw: 'Punda Milia', zhTags: '大遷徙主角', enTags: 'Great Migration', loc: 'All Parks', img: 'https://images.unsplash.com/photo-1526095179574-86e545346ae6?auto=format&fit=crop&w=800&q=80' },
+            { id: 'hyena', zh: '斑點鬣狗', en: 'Spotted Hyena', sw: 'Fisi', zhTags: '掠食者', enTags: 'Predator', loc: 'Crater, Serengeti', img: 'https://images.unsplash.com/photo-1656878689142-9d45179b3975?auto=format&fit=crop&w=800&q=80' },
+            { id: 'giraffe', zh: '馬賽長頸鹿', en: 'Giraffe', sw: 'Twiga', zhTags: '國獸', enTags: 'National Animal', loc: 'Tarangire', img: 'https://images.unsplash.com/photo-1547721064-da6cfb341d50?auto=format&fit=crop&w=800&q=80' },
+            { id: 'hippo', zh: '河馬', en: 'Hippo', sw: 'Kiboko', zhTags: '水生巨獸', enTags: 'Aquatic', loc: 'Hippo Pool', img: 'https://images.unsplash.com/photo-1672239795756-4cdebb8636cd?auto=format&fit=crop&w=800&q=80' },
+            { id: 'turtle', zh: '綠海龜', en: 'Sea Turtle', sw: 'Kobe', zhTags: '海洋保育', enTags: 'Marine Conservation', loc: 'Zanzibar Nungwi', img: 'https://images.unsplash.com/photo-1437622368342-7a3d73a34c8f?auto=format&fit=crop&w=800&q=80' }
         ];
 
-        // --- State Management ---
-        let currentLang = 'zh';
         let state = { sighted: [], medLog: [] };
-        
         try {
-            currentLang = localStorage.getItem('safari_lang') || 'zh';
             state.sighted = JSON.parse(localStorage.getItem('safari_sighted_animals') || '[]');
             state.medLog = JSON.parse(localStorage.getItem('malaria_med_log') || '[]');
-        } catch(e) { console.warn('LocalStorage restricted'); }
+        } catch(e) {}
 
         const saveState = () => {
             try {
-                localStorage.setItem('safari_lang', currentLang);
                 localStorage.setItem('safari_sighted_animals', JSON.stringify(state.sighted));
                 localStorage.setItem('malaria_med_log', JSON.stringify(state.medLog));
             } catch(e) { }
         };
 
-        // --- STREAMING_CHUNK:Render Functions ---
-        function updateLanguageUI() {
+        // === 渲染介面函數 ===
+        function updateLanguage() {
             document.querySelectorAll('[data-i18n]').forEach(el => {
                 const key = el.getAttribute('data-i18n');
                 if (i18n[currentLang][key]) el.innerText = i18n[currentLang][key];
             });
             document.getElementById('lang-toggle').innerText = i18n[currentLang].toggleBtn;
-            
             renderItinerary();
             renderWildlife();
-            renderMalariaTimeline();
-            updateClocksAndPill();
+            renderTimeline();
+            updatePillCountdown();
         }
 
         document.getElementById('lang-toggle').addEventListener('click', () => {
             currentLang = currentLang === 'zh' ? 'en' : 'zh';
-            saveState();
-            updateLanguageUI();
+            try { localStorage.setItem('safari_lang', currentLang); } catch(e) {}
+            updateLanguage();
         });
 
-        // Accordion State
-        let activeAccordionDay = 1;
-
+        // 渲染手風琴行程表
         function renderItinerary() {
             const container = document.getElementById('itinerary-list');
-            container.innerHTML = itinerary.map(day => {
+            container.innerHTML = itinerary.map((day, idx) => {
                 const data = currentLang === 'zh' ? day.zh : day.en;
-                const isExpanded = activeAccordionDay === day.day;
-                const displayDate = day.date.replace(/\//g, '-').substring(5); // Show MM-DD
-                
+                const displayDate = day.date.replace(/\//g, '-');
                 return `
-                <div class="bento-card overflow-hidden ${isExpanded ? 'accordion-active border-safari-gold shadow-md' : 'border-stone-200'}">
-                    <div class="px-4 py-4 flex justify-between items-center cursor-pointer bg-white" onclick="toggleAccordion(${day.day})">
-                        <div class="flex items-center gap-3">
-                            <div class="w-10 h-10 rounded-full bg-orange-50 text-safari-gold flex items-center justify-center font-black text-sm border border-orange-100 shrink-0">
-                                D${day.day}
-                            </div>
-                            <div class="text-left">
-                                <div class="text-[10px] text-stone-400 font-mono font-bold tracking-wider">${displayDate}</div>
-                                <div class="text-sm font-bold text-safari-textMain">${data.dest}</div>
-                            </div>
+                <div class="bento-card relative overflow-hidden transition-all duration-300">
+                    ${day.highlight ? '<div class="absolute top-0 right-0 bg-red-500 text-white text-[10px] font-bold px-2 py-1 rounded-bl-lg z-10">Highlight</div>' : ''}
+                    
+                    <!-- 卡片點擊區塊 (Toggle) -->
+                    <div class="p-4 cursor-pointer active:bg-stone-50 transition-colors" onclick="toggleAccordion(${idx})">
+                        <div class="flex justify-between items-start mb-1">
+                            <h3 class="font-bold text-lg text-safari-gold">Day ${day.day}</h3>
+                            <span class="text-xs text-stone-400 font-mono">${displayDate}</span>
                         </div>
-                        <i data-lucide="chevron-down" class="w-5 h-5 text-stone-400 accordion-icon"></i>
+                        <div class="text-stone-800 font-bold flex items-center justify-between">
+                            <span><i data-lucide="map-pin" class="w-4 h-4 inline text-safari-gold mr-1"></i>${data.dest}</span>
+                            <i data-lucide="chevron-down" id="chevron-${idx}" class="w-5 h-5 text-stone-400 transition-transform duration-300"></i>
+                        </div>
                     </div>
-                    <div class="accordion-content bg-stone-50/50">
-                        <div class="px-4 pb-4 border-t border-stone-100 pt-3 space-y-3">
-                            <div class="flex items-start gap-2">
-                                <i data-lucide="tent" class="w-4 h-4 text-safari-gold shrink-0 mt-0.5"></i>
-                                <div>
-                                    <div class="text-[10px] uppercase font-bold text-stone-400">Accommodation</div>
-                                    <div class="text-sm font-bold text-safari-textMain">${data.lodge}</div>
-                                </div>
-                            </div>
-                            <div class="flex items-start gap-2">
-                                <i data-lucide="utensils" class="w-4 h-4 text-orange-500 shrink-0 mt-0.5"></i>
-                                <div>
-                                    <div class="text-[10px] uppercase font-bold text-stone-400">Meals</div>
-                                    <div class="text-sm font-medium text-stone-600">${data.meals}</div>
-                                </div>
-                            </div>
-                            <div class="bg-white p-3 rounded-lg border border-stone-100 text-sm text-stone-600 leading-relaxed shadow-sm">
-                                ${day.highlight ? '<span class="text-red-500 font-bold mr-1">★</span>' : ''}${data.activity}
-                            </div>
-                        </div>
+                    
+                    <!-- 手風琴展開內容 -->
+                    <div id="acc-content-${idx}" class="accordion-content bg-stone-50/50 border-t border-stone-100 px-4">
+                        <div class="text-sm text-stone-600 mb-1 flex items-center gap-2"><i data-lucide="tent" class="w-4 h-4 text-stone-400"></i>${data.lodge}</div>
+                        <div class="text-sm text-stone-600 mb-3 flex items-center gap-2"><i data-lucide="utensils" class="w-4 h-4 text-stone-400"></i>${data.meals}</div>
+                        <p class="text-sm text-stone-500 leading-relaxed">${data.activity}</p>
                     </div>
                 </div>
-                `;
-            }).join('');
+            `}).join('');
             lucide.createIcons();
         }
 
-        window.toggleAccordion = function(day) {
-            activeAccordionDay = activeAccordionDay === day ? null : day;
-            renderItinerary();
+        function toggleAccordion(idx) {
+            const content = document.getElementById(`acc-content-${idx}`);
+            const chevron = document.getElementById(`chevron-${idx}`);
+            content.classList.toggle('expanded');
+            chevron.classList.toggle('rotate-180');
         }
 
+        // 渲染動物圖鑑 (修復點擊互動)
         function renderWildlife() {
             const container = document.getElementById('wildlife-grid');
             container.innerHTML = animals.map(animal => {
                 const isSighted = state.sighted.includes(animal.id);
                 const name = currentLang === 'zh' ? animal.zh : animal.en;
                 const subName = currentLang === 'zh' ? animal.en : animal.sw;
-                
                 return `
-                <div class="bento-card overflow-hidden relative group border-stone-200 transition-all ${isSighted ? 'border-safari-green ring-2 ring-emerald-500/20' : ''}">
-                    <img src="${animal.img}" class="w-full h-36 object-cover transition-all duration-500 ${isSighted ? 'opacity-100 scale-105' : 'opacity-60 grayscale'}" alt="${name}" loading="lazy" referrerpolicy="no-referrer" onerror="this.src='https://placehold.co/400x300/e7e5e4/78716c?text=${name}'">
-                    <div class="absolute inset-0 bg-gradient-to-t from-stone-900/95 via-stone-900/30 to-transparent"></div>
+                <div class="bento-card overflow-hidden relative cursor-pointer group shadow-sm border-stone-200 bg-black" onclick="openModal('${animal.id}')">
+                    <img src="${animal.img}" referrerpolicy="no-referrer" class="w-full h-36 object-cover transition-all duration-500 ${isSighted ? 'opacity-100 scale-100' : 'opacity-60 grayscale scale-105'}" alt="${name}">
+                    <div class="absolute inset-0 bg-gradient-to-t from-stone-900/90 via-stone-900/20 to-transparent pointer-events-none"></div>
                     
-                    <div class="absolute bottom-3 left-3 right-3" onclick="openModal('${animal.id}')">
-                        <div class="font-bold text-white text-sm tracking-wide drop-shadow-md">${name}</div>
-                        <div class="text-[10px] text-safari-gold font-medium drop-shadow-md truncate">${subName}</div>
+                    <div class="absolute bottom-3 left-3 right-3 pointer-events-none">
+                        <div class="font-bold text-white text-[15px] drop-shadow-md leading-tight">${name}</div>
+                        <div class="text-[11px] text-amber-400 drop-shadow-md mt-0.5">${subName}</div>
                     </div>
-
-                    <button class="absolute top-2 right-2 w-8 h-8 rounded-full flex items-center justify-center transition-colors shadow-md active:scale-90 ${isSighted ? 'bg-safari-green text-white' : 'bg-white/90 text-stone-300'}" onclick="toggleAnimal('${animal.id}')">
-                        <i data-lucide="check" class="w-5 h-5 ${isSighted ? '' : 'hidden'}"></i>
-                        <div class="w-3 h-3 rounded-full border-2 border-stone-300 ${isSighted ? 'hidden' : ''}"></div>
+                    
+                    <!-- 獨立的打卡按鈕 (防止冒泡) -->
+                    <button class="absolute top-2 right-2 w-8 h-8 rounded-full flex items-center justify-center transition-all ${isSighted ? 'bg-safari-green text-white shadow-md shadow-emerald-900/50' : 'bg-stone-900/40 backdrop-blur-sm border border-white/30 text-white/50 hover:bg-stone-900/60'}" onclick="event.stopPropagation(); toggleAnimal('${animal.id}')">
+                        <i data-lucide="${isSighted ? 'check' : 'circle-dashed'}" class="w-4 h-4"></i>
                     </button>
                 </div>
-                `;
-            }).join('');
+            `}).join('');
             lucide.createIcons();
-            
-            const pct = Math.round((state.sighted.length / animals.length) * 100);
-            document.getElementById('wildlife-progress').innerText = `${pct}% (${state.sighted.length}/${animals.length})`;
-            document.getElementById('wildlife-bar').style.width = `${pct}%`;
+            updateProgress();
         }
 
-        window.toggleAnimal = function(id) {
+        function toggleAnimal(id) {
             if (state.sighted.includes(id)) {
                 state.sighted = state.sighted.filter(i => i !== id);
             } else {
@@ -482,158 +425,22 @@
             renderWildlife();
         }
 
-        function renderMalariaTimeline() {
-            const container = document.getElementById('malaria-timeline');
-            let html = '';
-            
-            // Loop 19 days from Sep 23 to Oct 11
-            let d = new Date('2026-09-23T00:00:00');
-            for(let i=1; i<=19; i++) {
-                const dateStr = d.toISOString().split('T')[0]; // YYYY-MM-DD
-                const displayDate = `${d.getMonth()+1}/${d.getDate()}`;
-                const isTaken = state.medLog.includes(dateStr);
-                
-                let phaseLabel = "";
-                if (i === 1) phaseLabel = currentLang === 'zh' ? "香港出發" : "Departure";
-                else if (i >= 2 && i <= 12) phaseLabel = currentLang === 'zh' ? "Safari 期間" : "Safari Days";
-                else if (i === 13) phaseLabel = currentLang === 'zh' ? "抵港後連續7天" : "Post-trip 7 Days";
-
-                html += `
-                <div class="relative flex items-center mb-5 group">
-                    <div class="absolute -left-[23px] w-5 h-5 rounded-full border-[3px] z-10 flex items-center justify-center transition-colors ${isTaken ? 'bg-safari-green border-emerald-200' : 'bg-white border-stone-200'}">
-                        ${isTaken ? '<i data-lucide="check" class="w-3 h-3 text-white"></i>' : ''}
-                    </div>
-                    <div class="ml-4 flex-1">
-                        <div class="flex items-baseline gap-2">
-                            <span class="text-sm font-bold ${isTaken ? 'text-safari-green' : 'text-stone-700'}">${displayDate}</span>
-                            ${phaseLabel ? `<span class="text-[10px] text-stone-400 bg-stone-100 px-1.5 py-0.5 rounded font-medium">${phaseLabel}</span>` : ''}
-                        </div>
-                    </div>
-                </div>`;
-                d.setDate(d.getDate() + 1);
-            }
-            container.innerHTML = html;
-            lucide.createIcons();
+        function updateProgress() {
+            const pct = Math.round((state.sighted.length / animals.length) * 100);
+            document.getElementById('wildlife-progress').innerText = `${pct}% (${state.sighted.length}/${animals.length})`;
+            document.getElementById('wildlife-bar').style.width = `${pct}%`;
         }
 
-        // --- STREAMING_CHUNK:Clocks and Timers ---
-        function updateClocksAndPill() {
-            const now = new Date();
-            const nowTime = now.getTime();
-            
-            // Dual Clocks
-            const fmt = { hour: '2-digit', minute:'2-digit', second:'2-digit', hour12:false };
-            document.getElementById('hkt-time').innerText = now.toLocaleTimeString('en-US', { timeZone: 'Asia/Hong_Kong', ...fmt });
-            document.getElementById('eat-time').innerText = now.toLocaleTimeString('en-US', { timeZone: 'Africa/Dar_es_Salaam', ...fmt });
-            
-            // Trip Progress Badge
-            const diffDays = Math.ceil((nowTime - START_DATE.getTime()) / (1000 * 60 * 60 * 24));
-            let dayText = diffDays > 0 && diffDays <= 11 ? `${i18n[currentLang].dayStr} ${diffDays} / 11` : (diffDays <= 0 ? 'Ready' : 'Completed');
-            document.getElementById('trip-day-badge').innerText = dayText;
-
-            // Malaria Tracker State
-            const eatDateObj = new Date(new Date().toLocaleString("en-US", {timeZone: "Africa/Dar_es_Salaam"}));
-            const todayStr = eatDateObj.toISOString().split('T')[0]; // Current EAT date
-            
-            const btn = document.getElementById('btn-take-pill');
-            const lockMsg = document.getElementById('time-lock-msg');
-            
-            // TIME LOCK CHECK
-            if (nowTime < MED_START) {
-                // Trip hasn't started yet
-                btn.disabled = true;
-                btn.className = "w-full py-4 rounded-xl font-bold text-lg flex items-center justify-center gap-2 bg-stone-200 text-stone-400 cursor-not-allowed";
-                btn.innerHTML = `<i data-lucide="lock" class="w-6 h-6"></i> <span>${currentLang === 'zh' ? '尚未解鎖' : 'Locked'}</span>`;
-                lockMsg.classList.remove('hidden');
-                document.getElementById('pill-countdown').innerText = "--:--:--";
-            } else {
-                // Active tracker
-                lockMsg.classList.add('hidden');
-                
-                // Countdown to local 20:00
-                let target20 = new Date(eatDateObj);
-                target20.setHours(20, 0, 0, 0);
-                if (eatDateObj > target20) { target20.setDate(target20.getDate() + 1); } 
-                
-                const diff = target20 - eatDateObj;
-                const h = Math.floor(diff / 1000 / 60 / 60);
-                const m = Math.floor((diff / 1000 / 60) % 60);
-                const s = Math.floor((diff / 1000) % 60);
-                document.getElementById('pill-countdown').innerText = `${h.toString().padStart(2,'0')}h ${m.toString().padStart(2,'0')}m ${s.toString().padStart(2,'0')}s`;
-
-                // Button State Update
-                if (state.medLog.includes(todayStr)) {
-                    btn.disabled = true;
-                    btn.className = "w-full py-4 rounded-xl font-bold text-lg flex items-center justify-center gap-2 bg-safari-green text-white shadow-inner opacity-90";
-                    btn.innerHTML = `<i data-lucide="check-circle" class="w-6 h-6"></i> <span>${i18n[currentLang].pillTaken}</span>`;
-                } else {
-                    btn.disabled = false;
-                    btn.className = "w-full py-4 rounded-xl font-bold text-lg transition-transform flex items-center justify-center gap-2 bg-safari-gold text-white shadow-lg active:scale-95";
-                    btn.innerHTML = `<i data-lucide="pill" class="w-6 h-6"></i> <span>${i18n[currentLang].pillMark}</span>`;
-                }
-            }
-            lucide.createIcons();
-        }
-
-        document.getElementById('btn-take-pill').onclick = () => {
-            const nowTime = new Date().getTime();
-            if (nowTime < MED_START) return; // double check
-
-            const eatDateObj = new Date(new Date().toLocaleString("en-US", {timeZone: "Africa/Dar_es_Salaam"}));
-            const todayStr = eatDateObj.toISOString().split('T')[0];
-            
-            if(!state.medLog.includes(todayStr)) {
-                state.medLog.push(todayStr);
-                saveState();
-                renderMalariaTimeline(); // Re-render timeline to show checkmark
-                updateClocksAndPill();
-                if(navigator.vibrate) try { navigator.vibrate([50, 50, 50]); } catch(e) {}
-            }
-        };
-
-        setInterval(updateClocksAndPill, 1000);
-
-        // --- STREAMING_CHUNK:Navigation & Modal Interactions ---
-        // FAB Speed Dial Toggle
-        const fabContainer = document.getElementById('fab-container');
-        document.getElementById('fab-toggle').addEventListener('click', () => {
-            fabContainer.classList.toggle('fab-open');
-        });
-
-        // Tab Switching Logic
-        const tabs = document.querySelectorAll('.tab-content');
-        document.querySelectorAll('.fab-nav-btn').forEach(btn => {
-            btn.addEventListener('click', () => {
-                const target = btn.dataset.target;
-                
-                // Switch Tabs
-                tabs.forEach(tab => tab.classList.remove('active'));
-                document.getElementById(target).classList.add('active');
-                
-                // Scroll to top
-                document.getElementById('main-scroll').scrollTo(0,0);
-                
-                // Close FAB automatically
-                fabContainer.classList.remove('fab-open');
-            });
-        });
-
-        // Close FAB when tapping outside (Main scroll area)
-        document.getElementById('main-scroll').addEventListener('touchstart', () => {
-            if (fabContainer.classList.contains('fab-open')) {
-                fabContainer.classList.remove('fab-open');
-            }
-        }, {passive: true});
-
-        // Modal Logic
         const modal = document.getElementById('animal-modal');
-        window.openModal = function(id) {
+        function openModal(id) {
             const animal = animals.find(a => a.id === id);
+            const title = currentLang === 'zh' ? `${animal.zh}` : animal.en;
+            const tags = currentLang === 'zh' ? animal.zhTags : animal.enTags;
             
             document.getElementById('modal-img').src = animal.img;
-            document.getElementById('modal-title').innerText = currentLang === 'zh' ? animal.zh : animal.en;
+            document.getElementById('modal-title').innerText = title;
             document.getElementById('modal-swahili').innerText = animal.sw;
-            document.getElementById('modal-tags').innerText = currentLang === 'zh' ? animal.zhTags : animal.enTags;
+            document.getElementById('modal-tags').innerText = tags;
             document.getElementById('modal-loc').innerText = animal.loc;
             
             modal.classList.remove('hidden');
@@ -644,21 +451,165 @@
             setTimeout(() => modal.classList.add('hidden'), 300);
         };
 
-        // ICS Export
-        window.exportICS = function() {
+        // === 時鐘與用藥防呆邏輯 ===
+        function updateClocks() {
+            const now = new Date();
+            const fmt = { hour: '2-digit', minute:'2-digit', second:'2-digit', hour12:false };
+            document.getElementById('hkt-time').innerText = now.toLocaleTimeString('en-US', { timeZone: 'Asia/Hong_Kong', ...fmt });
+            document.getElementById('eat-time').innerText = now.toLocaleTimeString('en-US', { timeZone: 'Africa/Dar_es_Salaam', ...fmt });
+            
+            const diffTime = now.getTime() - START_DATE.getTime();
+            const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24)) + 1; // 第一天 = Day 1
+            let dayText = diffDays > 0 && diffDays <= 11 ? `${i18n[currentLang].dayStr} ${diffDays} / 11` : (diffDays <= 0 ? 'Ready' : 'End');
+            document.getElementById('trip-day-badge').innerText = dayText;
+
+            updatePillCountdown();
+        }
+
+        function updatePillCountdown() {
+            const now = new Date();
+            // 嚴格鎖定：9月23日之前禁止打卡
+            const lockDate = new Date('2026/09/23 00:00:00+08:00');
+            const btn = document.getElementById('btn-take-pill');
+            
+            if (now < lockDate) {
+                btn.disabled = true;
+                btn.className = "w-full py-4 rounded-xl font-bold text-lg transition-all flex items-center justify-center gap-2 bg-stone-200 text-stone-400 cursor-not-allowed border border-stone-300";
+                btn.innerHTML = `<i data-lucide="lock" class="w-6 h-6"></i> <span>${i18n[currentLang].pillLock}</span>`;
+                document.getElementById('pill-countdown').innerText = "--:--:--";
+                lucide.createIcons();
+                return;
+            }
+
+            // 倒數邏輯 (當地時間 20:00)
+            const eatDate = new Date(new Date().toLocaleString("en-US", {timeZone: "Africa/Dar_es_Salaam"}));
+            let target = new Date(eatDate);
+            target.setHours(20, 0, 0, 0);
+            
+            if (eatDate > target) { target.setDate(target.getDate() + 1); } 
+            
+            const diff = target - eatDate;
+            const h = Math.floor(diff / 1000 / 60 / 60);
+            const m = Math.floor((diff / 1000 / 60) % 60);
+            const s = Math.floor((diff / 1000) % 60);
+            document.getElementById('pill-countdown').innerText = `${h.toString().padStart(2,'0')}h ${m.toString().padStart(2,'0')}m ${s.toString().padStart(2,'0')}s`;
+
+            const todayStr = eatDate.toISOString().split('T')[0];
+            const takenText = i18n[currentLang].pillTaken;
+            const markText = i18n[currentLang].pillMark;
+
+            if (state.medLog.includes(todayStr)) {
+                btn.className = "w-full py-4 rounded-xl font-bold text-lg transition-all flex items-center justify-center gap-2 bg-safari-green text-white shadow-md shadow-emerald-200";
+                btn.innerHTML = `<i data-lucide="check-circle" class="w-6 h-6"></i> <span>${takenText}</span>`;
+                btn.disabled = true;
+            } else {
+                btn.className = "w-full py-4 rounded-xl font-bold text-lg transition-all active:scale-[0.98] flex items-center justify-center gap-2 bg-safari-gold text-white shadow-lg shadow-amber-600/30";
+                btn.innerHTML = `<i data-lucide="circle" class="w-6 h-6"></i> <span>${markText}</span>`;
+                btn.disabled = false;
+            }
+            lucide.createIcons();
+        }
+
+        document.getElementById('btn-take-pill').onclick = () => {
+            const eatDate = new Date(new Date().toLocaleString("en-US", {timeZone: "Africa/Dar_es_Salaam"}));
+            const todayStr = eatDate.toISOString().split('T')[0];
+            if(!state.medLog.includes(todayStr)) {
+                state.medLog.push(todayStr);
+                saveState();
+                updatePillCountdown();
+                renderTimeline(); // 更新時間軸狀態
+            }
+        };
+
+        // 渲染完整的 19 天時間軸
+        function renderTimeline() {
+            const timelineContainer = document.getElementById('malaria-timeline');
+            let html = '';
+            
+            // 建立 19 天的日期陣列 (9/23 ~ 10/11)
+            let startDate = new Date('2026/09/23 12:00:00+08:00');
+            
+            for(let i=0; i<19; i++) {
+                let d = new Date(startDate);
+                d.setDate(d.getDate() + i);
+                let dateStr = d.toISOString().split('T')[0];
+                let isTaken = state.medLog.includes(dateStr);
+                
+                let title = currentLang === 'zh' ? `第 ${i+1} 劑` : `Dose ${i+1}`;
+                let loc = "Safari";
+                if (i === 0) loc = currentLang === 'zh' ? "香港 (出發前)" : "HK (Pre-trip)";
+                if (i >= 12) loc = currentLang === 'zh' ? "香港 (返國後)" : "HK (Post-trip)";
+                
+                html += `
+                <div class="relative">
+                    <div class="absolute -left-[25px] top-1 w-3 h-3 rounded-full border-2 ${isTaken ? 'bg-safari-green border-safari-green' : 'bg-stone-200 border-white shadow-sm'}"></div>
+                    <div class="flex justify-between items-end">
+                        <div>
+                            <div class="text-sm font-bold ${isTaken ? 'text-safari-green' : 'text-stone-700'}">${title} - ${dateStr}</div>
+                            <div class="text-xs text-stone-500">${loc}</div>
+                        </div>
+                        ${isTaken ? `<i data-lucide="check" class="w-4 h-4 text-safari-green"></i>` : ''}
+                    </div>
+                </div>
+                `;
+            }
+            timelineContainer.innerHTML = html;
+            lucide.createIcons();
+        }
+
+        // === FAB 懸浮選單與分頁切換 ===
+        const fabMain = document.getElementById('fab-main');
+        const fabMenu = document.getElementById('fab-menu');
+        const fabOverlay = document.getElementById('fab-overlay');
+        let isFabOpen = false;
+
+        function toggleFab() {
+            isFabOpen = !isFabOpen;
+            fabMain.classList.toggle('open', isFabOpen);
+            fabMenu.classList.toggle('open', isFabOpen);
+            fabMenu.classList.toggle('closed', !isFabOpen);
+            
+            if(isFabOpen) {
+                fabOverlay.classList.remove('opacity-0', 'pointer-events-none');
+                fabOverlay.classList.add('opacity-100', 'pointer-events-auto');
+            } else {
+                fabOverlay.classList.remove('opacity-100', 'pointer-events-auto');
+                fabOverlay.classList.add('opacity-0', 'pointer-events-none');
+            }
+        }
+
+        fabMain.addEventListener('click', toggleFab);
+        fabOverlay.addEventListener('click', () => { if(isFabOpen) toggleFab(); });
+
+        const navBtns = document.querySelectorAll('.nav-btn');
+        const tabs = document.querySelectorAll('.tab-content');
+        navBtns.forEach(btn => {
+            btn.addEventListener('click', () => {
+                const target = btn.dataset.target;
+                tabs.forEach(tab => tab.classList.remove('active'));
+                document.getElementById(target).classList.add('active');
+                
+                document.getElementById('main-scroll').scrollTo({ top: 0, behavior: 'smooth' });
+                
+                // 切換後自動收合選單
+                if(isFabOpen) toggleFab();
+            });
+        });
+
+        // === 匯出 ICS ===
+        function exportICS() {
             let icsMSG = "BEGIN:VCALENDAR\nVERSION:2.0\nPRODID:-//Tanzania Safari 2026//HK\n";
             itinerary.forEach((day) => {
-                const date = day.date.replace(/\//g, ''); // YYYYMMDD
+                const date = day.date.replace(/\//g, '');
                 const endD = new Date(day.date);
                 endD.setDate(endD.getDate() + 1);
-                
                 const yyyy = endD.getFullYear();
                 const mm = String(endD.getMonth() + 1).padStart(2, '0');
                 const dd = String(endD.getDate()).padStart(2, '0');
                 const endDate = `${yyyy}${mm}${dd}`;
                 
                 const data = currentLang === 'zh' ? day.zh : day.en;
-                icsMSG += `BEGIN:VEVENT\nDTSTART;VALUE=DATE:${date}\nDTEND;VALUE=DATE:${endDate}\nSUMMARY:Safari D${day.day} - ${data.dest}\nDESCRIPTION:Accommodation: ${data.lodge}\\nMeals: ${data.meals}\\nActivity: ${data.activity}\nEND:VEVENT\n`;
+                icsMSG += `BEGIN:VEVENT\nDTSTART;VALUE=DATE:${date}\nDTEND;VALUE=DATE:${endDate}\nSUMMARY:Safari Day ${day.day}: ${data.dest}\nDESCRIPTION:Lodge: ${data.lodge}\\nMeals: ${data.meals}\\nActivity: ${data.activity}\nEND:VEVENT\n`;
             });
             icsMSG += "END:VCALENDAR";
             
@@ -671,41 +622,62 @@
             document.body.removeChild(link);
         }
 
-        // --- STREAMING_CHUNK:Offline Service Worker Boilerplate ---
-        const swCode = `
-            const CACHE_NAME = 'safari-v3-offline';
-            self.addEventListener('install', e => self.skipWaiting());
-            self.addEventListener('activate', e => {
-                e.waitUntil(caches.keys().then(keys => Promise.all(
-                    keys.filter(k => k !== CACHE_NAME).map(k => caches.delete(k))
-                )));
-                self.clients.claim();
-            });
-            self.addEventListener('fetch', e => {
-                if(e.request.method !== 'GET') return;
-                e.respondWith(caches.match(e.request).then(cached => {
-                    return cached || fetch(e.request).then(res => {
-                        const clone = res.clone();
-                        caches.open(CACHE_NAME).then(c => c.put(e.request, clone));
-                        return res;
-                    }).catch(() => {
-                        // Offline fallback logic here if needed
-                    });
-                }));
-            });
-        `;
+        // === 初始化 ===
+        updateLanguage();
+        lucide.createIcons();
+        setInterval(updateClocks, 1000);
+        updateClocks();
+        
+        // ====== 離線引擎 (Service Worker & Cache Storage) ======
+        // 放在最底部，將 SW 邏輯轉換為 Blob 並自動註冊
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', () => {
-                try {
-                    const blob = new Blob([swCode], { type: 'application/javascript' });
-                    navigator.serviceWorker.register(URL.createObjectURL(blob))
-                    .catch(() => console.log('SW registration fallback.'));
-                } catch(e) {}
+                const swCode = `
+                    const CACHE_NAME = 'safari-cache-final-v1';
+                    
+                    self.addEventListener('install', event => {
+                        self.skipWaiting();
+                    });
+
+                    self.addEventListener('activate', event => {
+                        event.waitUntil(clients.claim());
+                    });
+
+                    self.addEventListener('fetch', event => {
+                        if (event.request.method !== 'GET') return;
+                        
+                        // 只攔截圖片、字體與主網頁
+                        event.respondWith(
+                            caches.match(event.request).then(cachedResponse => {
+                                if (cachedResponse) {
+                                    return cachedResponse; // 離線時從金庫提取
+                                }
+                                return fetch(event.request).then(networkResponse => {
+                                    if (!networkResponse || networkResponse.status !== 200 || networkResponse.type === 'error' || !event.request.url.startsWith('http')) {
+                                        return networkResponse;
+                                    }
+                                    const responseToCache = networkResponse.clone();
+                                    caches.open(CACHE_NAME).then(cache => {
+                                        cache.put(event.request, responseToCache);
+                                    });
+                                    return networkResponse;
+                                }).catch(() => {
+                                    console.log('Offline and resource not in cache:', event.request.url);
+                                });
+                            })
+                        );
+                    });
+                `;
+                const blob = new Blob([swCode], { type: 'application/javascript' });
+                const swUrl = URL.createObjectURL(blob);
+                
+                navigator.serviceWorker.register(swUrl).then(registration => {
+                    console.log('離線引擎 (Service Worker) 註冊成功，快取已啟動！');
+                }).catch(error => {
+                    console.error('離線引擎註冊失敗:', error);
+                });
             });
         }
-
-        // Initialize
-        updateLanguageUI();
     </script>
 </body>
 </html>
