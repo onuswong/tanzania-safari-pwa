@@ -629,28 +629,46 @@
         updateClocks();
         
         // ====== 離線引擎 (Service Worker & Cache Storage) ======
-        // 放在最底部，將 SW 邏輯轉換為 Blob 並自動註冊
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', () => {
                 const swCode = `
-                    const CACHE_NAME = 'safari-cache-final-v1';
+                    const CACHE_NAME = 'safari-cache-v2';
+                    // 核心必備檔案：必須在安裝階段就強制下載並快取
+                    const PRECACHE_URLS = [
+                        '/',
+                        '/index.html',
+                        'https://cdn.tailwindcss.com',
+                        'https://unpkg.com/lucide@latest'
+                    ];
                     
+                    // 安裝階段：強制預先快取核心檔案
                     self.addEventListener('install', event => {
-                        self.skipWaiting();
+                        event.waitUntil(
+                            caches.open(CACHE_NAME).then(cache => {
+                                return cache.addAll(PRECACHE_URLS);
+                            }).then(() => self.skipWaiting())
+                        );
                     });
 
+                    // 啟動階段：清除舊版快取，確保拿到最新代碼
                     self.addEventListener('activate', event => {
-                        event.waitUntil(clients.claim());
+                        event.waitUntil(
+                            caches.keys().then(cacheNames => {
+                                return Promise.all(
+                                    cacheNames.filter(name => name !== CACHE_NAME).map(name => caches.delete(name))
+                                );
+                            }).then(() => self.clients.claim())
+                        );
                     });
 
+                    // 攔截請求階段：Cache-First 策略 (包含動態快取動物圖片)
                     self.addEventListener('fetch', event => {
                         if (event.request.method !== 'GET') return;
                         
-                        // 只攔截圖片、字體與主網頁
                         event.respondWith(
                             caches.match(event.request).then(cachedResponse => {
                                 if (cachedResponse) {
-                                    return cachedResponse; // 離線時從金庫提取
+                                    return cachedResponse; // 離線時優先從金庫提取
                                 }
                                 return fetch(event.request).then(networkResponse => {
                                     if (!networkResponse || networkResponse.status !== 200 || networkResponse.type === 'error' || !event.request.url.startsWith('http')) {
@@ -662,7 +680,7 @@
                                     });
                                     return networkResponse;
                                 }).catch(() => {
-                                    console.log('Offline and resource not in cache:', event.request.url);
+                                    console.log('離線模式，且快取中找不到資源:', event.request.url);
                                 });
                             })
                         );
@@ -672,12 +690,11 @@
                 const swUrl = URL.createObjectURL(blob);
                 
                 navigator.serviceWorker.register(swUrl).then(registration => {
-                    console.log('離線引擎 (Service Worker) 註冊成功，快取已啟動！');
+                    console.log('離線引擎 V2 註冊成功，核心檔案已預先快取！');
                 }).catch(error => {
                     console.error('離線引擎註冊失敗:', error);
                 });
             });
-        }
-    </script>
+        }    </script>
 </body>
 </html>
